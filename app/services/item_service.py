@@ -16,7 +16,12 @@ class ItemService:
         self._logger = logging.getLogger(__name__)
 
     def create(self, payload: ItemCreate) -> Item:
-        self._logger.debug("creating item with payload=%s", payload)
+        # Don't log sensitive payload values. Log only the keys present in the payload.
+        try:
+            keys = list(payload.dict().keys())
+        except Exception:
+            keys = []
+        self._logger.debug("creating item, payload_keys=%s", keys)
         item_id = str(uuid4())
         item = Item(id=item_id, **payload.dict())
         self._items[item_id] = item
@@ -29,7 +34,12 @@ class ItemService:
         return self._items.get(item_id)
 
     def update(self, item_id: str, payload: ItemUpdate) -> Optional[Item]:
-        self._logger.debug("updating item %s with payload=%s", item_id, payload)
+        # Only log which fields are updated, don't log their values.
+        try:
+            keys = list(payload.dict(exclude_unset=True).keys())
+        except Exception:
+            keys = []
+        self._logger.debug("updating item %s, payload_keys=%s", item_id, keys)
         item = self._items.get(item_id)
         if not item:
             return None
