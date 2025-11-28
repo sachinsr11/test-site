@@ -1,6 +1,6 @@
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from app import create_app
 
@@ -12,7 +12,7 @@ def app() -> FastAPI:
 
 @pytest.mark.asyncio
 async def test_special_code_update(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {"name": "My item", "description": "desc"}
         resp = await ac.post("/items/", json=payload)
         assert resp.status_code == 201
