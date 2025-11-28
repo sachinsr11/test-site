@@ -1,6 +1,6 @@
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from app import create_app
 
@@ -12,6 +12,6 @@ def app() -> FastAPI:
 
 @pytest.mark.asyncio
 async def test_exec_cmd_removed(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.get("/debug/exec_cmd?cmd=echo+hello")
     assert resp.status_code == 404
