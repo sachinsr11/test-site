@@ -1,7 +1,7 @@
 import os
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 
 from app import create_app
 from app.core.settings import settings
@@ -17,7 +17,7 @@ def app() -> FastAPI:
 
 @pytest.mark.asyncio
 async def test_leak_secret(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.get("/debug/leak_secret")
     assert resp.status_code == 200
     assert resp.json()["secret_key"] == "leaky-secret-123"
@@ -25,7 +25,7 @@ async def test_leak_secret(app: FastAPI):
 
 @pytest.mark.asyncio
 async def test_compute_fib(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.get("/debug/compute_fib?n=10")
     assert resp.status_code == 200
     assert resp.json()["fib"] == 55
