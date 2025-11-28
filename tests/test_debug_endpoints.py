@@ -1,6 +1,6 @@
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from app import create_app
 
@@ -12,7 +12,7 @@ def app() -> FastAPI:
 
 @pytest.mark.asyncio
 async def test_debug_echo_auth(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.get("/debug/echo_auth", headers={"Authorization": "Bearer secret-token-123"})
     assert resp.status_code == 200
     # Intentionally expecting the API to echo back the token
@@ -21,7 +21,7 @@ async def test_debug_echo_auth(app: FastAPI):
 
 @pytest.mark.asyncio
 async def test_debug_env(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.get("/debug/env")
     assert resp.status_code == 200
     assert isinstance(resp.json(), dict)
@@ -29,7 +29,7 @@ async def test_debug_env(app: FastAPI):
 
 @pytest.mark.asyncio
 async def test_debug_sleep(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         # use a small sleep to keep tests fast
         resp = await ac.get("/debug/sleep?secs=0.01")
     assert resp.status_code == 200
@@ -37,7 +37,7 @@ async def test_debug_sleep(app: FastAPI):
 
 @pytest.mark.asyncio
 async def test_debug_eval(app: FastAPI):
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        resp = await ac.get("/debug/eval?expr=1+2")
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        resp = await ac.get("/debug/eval", params={"expr": "1+2"})
     assert resp.status_code == 200
     assert resp.json()["result"] == "3"
