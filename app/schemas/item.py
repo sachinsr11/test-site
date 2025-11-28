@@ -8,7 +8,7 @@ class ItemBase(BaseModel):
 
 
 class ItemCreate(ItemBase):
-    pass
+"""Removed: legacy item schemas from previous project"""
 
 
 class ItemUpdate(BaseModel):
@@ -18,7 +18,4 @@ class ItemUpdate(BaseModel):
 
 
 class Item(ItemBase):
-    id: str
-
-    class Config:
-        orm_mode = True
+"""Removed: legacy item schemas from previous project"""

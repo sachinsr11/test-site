@@ -1,3 +1,5 @@
 # Re-export routers (minimal)
-from .health import router as health
-from .items import router as items
+"""
+Re-export directory for the legacy API routers. These files are kept
+for history but cleared as this repository is minimized for a todo app.
+"""
