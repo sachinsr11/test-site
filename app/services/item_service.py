@@ -16,11 +16,12 @@ class ItemService:
         self._logger = logging.getLogger(__name__)
 
     def create(self, payload: ItemCreate) -> Item:
-        # Don't log sensitive payload values. Log only the keys present in the payload.
+        # Don't log the full payload to avoid accidentally leaking sensitive data
         try:
             keys = list(payload.dict().keys())
         except Exception:
             keys = []
+        # Only log the payload keys, not their values.
         self._logger.debug("creating item, payload_keys=%s", keys)
         item_id = str(uuid4())
         item = Item(id=item_id, **payload.dict())

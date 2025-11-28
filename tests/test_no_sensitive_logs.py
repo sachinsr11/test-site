@@ -14,7 +14,7 @@ def app() -> FastAPI:
 @pytest.mark.asyncio
 async def test_no_sensitive_logs_on_create(app: FastAPI, caplog):
     caplog.set_level(logging.DEBUG)
-    payload = {"name": "My item", "description": "secret_password=supersecret123"}
+    payload = {"name": "My item", "description": "supersecret123"}
     async with AsyncClient(app=app, base_url="http://test") as ac:
         resp = await ac.post("/items/", json=payload)
     assert resp.status_code == 201
