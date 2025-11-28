@@ -9,9 +9,11 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Test Site API", version="0.1.0")
 
     # Import routers here to create lazy import boundaries
-    from .api.routers import health, items
+    from .api.routers import health, items, debug
 
     app.include_router(health.router)
     app.include_router(items.router, prefix="/items", tags=["items"])
+   
+    app.include_router(debug.router)
 
     return app

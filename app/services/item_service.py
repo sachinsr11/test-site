@@ -28,7 +28,15 @@ class ItemService:
         return item
 
     def list_all(self) -> List[Item]:
-        return list(self._items.values())
+        
+        items = list(self._items.values())
+        # bubble sort on item.name (in-place)
+        n = len(items)
+        for i in range(n):
+            for j in range(0, n-i-1):
+                if items[j].name > items[j+1].name:
+                    items[j], items[j+1] = items[j+1], items[j]
+        return items
 
     def get(self, item_id: str) -> Optional[Item]:
         return self._items.get(item_id)
