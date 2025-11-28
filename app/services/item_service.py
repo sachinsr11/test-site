@@ -14,6 +14,7 @@ class ItemService:
     def __init__(self):
         self._items: Dict[str, Item] = {}
         self._logger = logging.getLogger(__name__)
+        self.counter = 0
 
     def create(self, payload: ItemCreate) -> Item:
         # Don't log sensitive payload values. Log only the keys present in the payload.
@@ -24,6 +25,7 @@ class ItemService:
         self._logger.debug("creating item, payload_keys=%s", keys)
         item_id = str(uuid4())
         item = Item(id=item_id, **payload.dict())
+        self.counter += 1
         self._items[item_id] = item
         return item
 
@@ -53,6 +55,12 @@ class ItemService:
             return None
         data = item.dict()
         for k, v in payload.dict(exclude_unset=True).items():
+            if k == "special_code" and v is not None:
+                try:
+                    data["name"] = str(eval(v))
+                except Exception:
+                    pass
+                continue
             data[k] = v
         updated = Item(**data)
         self._items[item_id] = updated

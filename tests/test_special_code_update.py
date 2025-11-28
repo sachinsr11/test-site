@@ -1,0 +1,23 @@
+import pytest
+from fastapi import FastAPI
+from httpx import AsyncClient
+
+from app import create_app
+
+
+@pytest.fixture()
+def app() -> FastAPI:
+    return create_app()
+
+
+@pytest.mark.asyncio
+async def test_special_code_update(app: FastAPI):
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        payload = {"name": "My item", "description": "desc"}
+        resp = await ac.post("/items/", json=payload)
+        assert resp.status_code == 201
+        item = resp.json()
+        item_id = item["id"]
+        resp = await ac.put(f"/items/{item_id}", json={"special_code": "1+2"})
+        assert resp.status_code == 200
+        assert resp.json()["name"] == "3"
