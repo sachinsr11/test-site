@@ -1,4 +1,3 @@
-# Re-export routers
+# Re-export routers (minimal)
 from .health import router as health
 from .items import router as items
-from .debug import router as debug
