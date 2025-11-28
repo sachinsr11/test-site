@@ -14,7 +14,7 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    special_code: Optional[str] = None
+    # no special_code field
 
 
 class Item(ItemBase):

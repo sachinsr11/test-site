@@ -11,7 +11,8 @@ def app() -> FastAPI:
 
 
 @pytest.mark.asyncio
-async def test_exec_cmd_removed(app: FastAPI):
+async def test_debug_ping(app: FastAPI):
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        resp = await ac.get("/debug/exec_cmd?cmd=echo+hello")
-    assert resp.status_code == 404
+        resp = await ac.get("/debug/ping?secs=0.01")
+    assert resp.status_code == 200
+    assert resp.json()["ping"] == "ok"

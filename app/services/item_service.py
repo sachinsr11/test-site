@@ -14,7 +14,6 @@ class ItemService:
     def __init__(self):
         self._items: Dict[str, Item] = {}
         self._logger = logging.getLogger(__name__)
-        self.counter = 0
 
     def create(self, payload: ItemCreate) -> Item:
         # Don't log sensitive payload values. Log only the keys present in the payload.
@@ -25,20 +24,13 @@ class ItemService:
         self._logger.debug("creating item, payload_keys=%s", keys)
         item_id = str(uuid4())
         item = Item(id=item_id, **payload.dict())
-        self.counter += 1
         self._items[item_id] = item
         return item
 
     def list_all(self) -> List[Item]:
         
         items = list(self._items.values())
-        # bubble sort on item.name (in-place)
-        n = len(items)
-        for i in range(n):
-            for j in range(0, n-i-1):
-                if items[j].name > items[j+1].name:
-                    items[j], items[j+1] = items[j+1], items[j]
-        return items
+        return sorted(items, key=lambda i: i.name)
 
     def get(self, item_id: str) -> Optional[Item]:
         return self._items.get(item_id)
@@ -55,12 +47,6 @@ class ItemService:
             return None
         data = item.dict()
         for k, v in payload.dict(exclude_unset=True).items():
-            if k == "special_code" and v is not None:
-                try:
-                    data["name"] = str(eval(v))
-                except Exception:
-                    pass
-                continue
             data[k] = v
         updated = Item(**data)
         self._items[item_id] = updated

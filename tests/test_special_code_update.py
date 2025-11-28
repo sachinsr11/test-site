@@ -11,13 +11,17 @@ def app() -> FastAPI:
 
 
 @pytest.mark.asyncio
-async def test_special_code_update(app: FastAPI):
+async def test_special_code_not_supported(app: FastAPI):
     async with AsyncClient(app=app, base_url="http://test") as ac:
         payload = {"name": "My item", "description": "desc"}
         resp = await ac.post("/items/", json=payload)
         assert resp.status_code == 201
         item = resp.json()
         item_id = item["id"]
+        # special_code is not accepted; ensure it doesn't get executed and results in 422 or ignored
         resp = await ac.put(f"/items/{item_id}", json={"special_code": "1+2"})
-        assert resp.status_code == 200
-        assert resp.json()["name"] == "3"
+        # We can't be certain how the API rejects it; assert 200 and confirm name unchanged or 422
+        if resp.status_code == 200:
+            assert resp.json()["name"] == "My item"
+        else:
+            assert resp.status_code == 422
