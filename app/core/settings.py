@@ -1,9 +1,3 @@
-from pydantic import BaseSettings
-
-
-class Settings(BaseSettings):
-    app_name: str = "test-site"
-    debug: bool = True
-
-
-settings = Settings()
+"""
+Removed: legacy settings from previous project. Minimal todo app doesn't require these settings.
+"""
