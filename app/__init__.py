@@ -11,7 +11,7 @@ def create_app() -> FastAPI:
     # Import routers here to create lazy import boundaries
     from .api.routers import health, items
 
-    app.include_router(health.router)
-    app.include_router(items.router, prefix="/items", tags=["items"])
+    app.include_router(health)
+    app.include_router(items, prefix="/items", tags=["items"])
 
     return app
